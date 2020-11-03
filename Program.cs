@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace Project_Euler
 {
@@ -9,165 +11,290 @@ namespace Project_Euler
         
         static void Main()
         {
-            // Variabes i might need.
-            string sectionBar = "\n==================================================================================================================\n";
+            // Variabes we might need.
+            string sectionBar = "\n========================================================================================================================\n";
+            //bool firstMenuLoop = true;
 
             // Main loop ==> Like a menu, you can come back to it or exit out.
-            while (true){
-                // Construct a list of problems
-                List<Problem> Problems = new List<Problem>();
+            while (true)
+            {
 
-                // Add problems"
-                Problems.Add(
-                    new Problem(Problems.Count + 1, "Problem 1: Multiples of 3 and 5",
+                // Show the user a list of the problems
+                Console.WriteLine(sectionBar);
+                Console.WriteLine("List of problems:");
+                foreach (KeyValuePair<int, Problem> entry in Problems.P)
+                {
+                    Console.WriteLine(String.Format("[{0}]: {1}", entry.Key, entry.Value.Title));
+                }
+
+                
+
+                // Ask the user to input the ID of the desired problem; the program can be exited at this point.
+                Console.WriteLine(sectionBar);
+                Console.WriteLine("Please input the ID of a problem to print it's details.\n"+
+                    "To exit the program, input 'exit'.");
+                string Input = Console.ReadLine();
+                if (Input == "exit"){return;}
+                int ID = Convert.ToInt32(Input);
+
+                // Some control for input
+                while (!Problems.P.ContainsKey(ID))
+                {
+                    Console.WriteLine("Please input an existing ID.");
+                    Input = Console.ReadLine();
+                    if (Input == "exit") { return; }
+                    ID = Convert.ToInt32(Input);
+                }
+
+                // Print the details of the selected problem
+                Console.WriteLine(sectionBar);
+                Problem p = Problems.P[ID];
+                Console.WriteLine(p.Title + ":\n" + p.Discription + "\n\nSolved by: " + 
+                    p.Solved_by + "\nDifficulty: " + p.Difficulty + "%\n\nSolution: "+Problems.solutions(ID));
+
+                // Ask the user what to do next
+                Console.WriteLine(sectionBar);
+                Console.WriteLine("Input 'exit' to exit the program; any other input will return you to the list of problems.");
+                Input = Console.ReadLine();
+                // If the input isn't '1', close the program
+                if (Input == "exit")
+                {
+                    return;
+                }
+
+                //firstMenuLoop = false;
+            }
+        }
+
+        static class Problems
+        // This class contains the information pertaining to the all the problems.
+        {
+            // Dictinairy of problems
+            public static readonly Dictionary<int, Problem> P;
+
+            static Problems() // This is the constructor: below, we fill 'P' and add methods for returning the solution to the problems.
+            {
+
+                P = new Dictionary<int, Problem>();
+
+                P.Add(1, new Problem("Multiples of 3 and 5",
                     "If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.\n" +
                     "Find the sum of all the multiples of 3 or 5 below 1000.",
-                    964994, "5%")
-                    );
+                    964994, 5));
 
-                Problems.Add(
-                    new Problem(Problems.Count + 1, "Problem 7: 10001st prime",
+                P.Add(7, new Problem("10001st prime",
                     "By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.\n" +
                     "What is the 10 001st prime number?",
-                    421486, "5%")
-                    );
+                    421486, 5));
 
-                Problems.Add(
-                    new Problem(Problems.Count + 1, "Problem 31: Coin sums",
+                P.Add(31, new Problem("Coin sums",
                     "In the United Kingdom the currency is made up of pound (£) and pence (p). There are eight coins in general circulation:\n" +
                     "1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p).\n" +
                     "It is possible to make £2 in the following way:\n" +
                     "1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p\n" +
                     "How many different ways can £2 be made using any number of coins?",
-                    84093, "5%")
-                    );
+                    84093, 5));
 
-                // Show the user a list of the problems
-                Console.WriteLine(sectionBar);
-                Console.WriteLine("List of problems:");
-                foreach (Problem P in Problems)
-                {
-                    Console.WriteLine(String.Format("[{0}]: {1}", P.ID, P.Title));
-                }
+                P.Add(2, new Problem("Even Fibonacci numbers",
+                    "Each new term in the Fibonacci sequence is generated by adding the previous two terms. By starting with 1 and 2, the first 10 terms will be:\n" +
+                    "1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...\n" +
+                    "By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.",
+                    768279, 5));
 
-                // Ask the user to input the ID of the desired problem
-                Console.WriteLine(sectionBar);
-                Console.WriteLine("Please input the ID of a problem to print it's details.");
-                int ID = Convert.ToInt32(Console.ReadLine());
-
-                // Control for input
-                while (ID > Problems.Count){
-                    Console.WriteLine("Please input a valid ID. :)");
-                    ID = Convert.ToInt32(Console.ReadLine());
-                }
-
-                // Print the details of the problem
-                Console.WriteLine(sectionBar);
-                Problems[ID-1].PrintInfo();
-                PrintSolution(ID);
-
-                // Ask the user what to do next
-                Console.WriteLine(sectionBar);
-                Console.WriteLine("Please input '1' if you want to select another problem. Any other input will close this program.");
-                string Input = Console.ReadLine();
-                // If the input isn't '1', close the program
-                if (Input != "1")
-                {
-                    return;
-                }
+                P.Add(3, new Problem("Largest prime factor",
+                    "The prime factors of 13195 are 5, 7, 13 and 29.\n"+
+                    "What is the largest prime factor of the number 600851475143 ?",
+                    550872, 5));
             }
-        }
-        
-        static void PrintSolution(int ProblemID)
-        // This function contains all the methods for solving the problems. Preferable, these methods would be part of the Problem class in some way, but I don't know how to do this.
-        // I could have made this function return the solution value, but I dont know if this is allways an int.
-        {
-            switch (ProblemID)
+
+            public static long solutions(int pID)
             {
-                case 1: // "Multiples of 3 and 5"
-                    // For every natural number under 1000
-                    int stopAt = 1000;
-                    int total = 0;
-                    for (int i = 0; i < stopAt; i++)
-                    {
-                        // Add it to the total if it is divisible by 3 or 5
-                        if (i % 3 == 0 || i % 5 == 0)
-                        {
-                            total += i;
-                        }
-                    }
-                    Console.WriteLine(String.Format("Solution: {0}", total));
-                    break;
+                switch (pID)
+                {
+                    case 1: // Multiples of 3 and 5
 
-                case 2: // Determine the 10001st prime. (Turned out to be quite fast :D)
-
-                    // the idea is that a prime number is not divisible by any prime number lower than itself.
-                    // Therefore, I keep all discovered primes in a list for checking the next. (Runs in log(O) time? IDK)
-                    List<int> P = new List<int>();
-                    int numberToCheck = 1; // Prime numbers start at 2. (I wanted to do the +=1 at the start of the while loop)
-                    int primeTarget = 10001;
-                    while (P.Count < primeTarget) // 'primeNr' is checked this cycle
-                    {
-                        numberToCheck += 1;
-                        bool isPrime = true; // True untill proven otherwise
-                        foreach (int n in P) // For each prime that has been found so far
+                        // For every natural number under 1000
+                        int stopAt = 1000;
+                        int total = 0;
+                        for (int i = 0; i < stopAt; i++)
                         {
-                            if (numberToCheck % n == 0) // If it devides evenly
+                            // Add it to the total if it is divisible by 3 or 5
+                            if (i % 3 == 0 || i % 5 == 0)
                             {
-                                isPrime = false;
-                                break; // Break out op checking loop
+                                total += i;
                             }
                         }
-                        if (isPrime)
-                        {
-                            P.Add(numberToCheck); // This list also keeps track of how many primes are found
-                        }
+                        return total;
+
+                    case 7: // 10001st prime
                         
-                    }
-                    Console.WriteLine(String.Format("Solution: The {0}st prime is {1}", primeTarget, numberToCheck));
-                    break;
+                        int target = 10001; // Target
+                        return GetPrime(target); // This will be the 10001st prime.
 
-                case 3: // I had to cheat a bit for this one. I observed a pattern in the tables used here: https://www.xarg.org/puzzle/project-euler/problem-31/
-                    int[] coins = { 1, 2, 5, 10, 20, 50, 100, 200 };
-                    int target = 200;
-                    int[] waysToMake = new int[target+1]; // 0,1,2,3...200
+                    case 31: // Coin sums
 
-                    waysToMake[0] = 1; // We can't make 0p using the coins, but this is done for handiness' sake.
+                        int[] coins = { 1, 2, 5, 10, 20, 50, 100, 200 };
+                        target = 200;
+                        int[] waysToMake = new int[target + 1]; // 0,1,2,3...200
 
-                    foreach (int coin in coins) // For every coin
-                    {
-                        for (int t = coin; t<=target; t++)
+                        waysToMake[0] = 1; // We can't make 0p using the coins, but this is done for handiness' sake.
+                        // In the algorithm, this amounts to adding 1 possibility every time t-coin is 0p.
+
+                        foreach (int coin in coins) // For every coin
                         {
-                            // Using only coins <= coin, how many ways to make target?
-                            waysToMake[t] += waysToMake[t-coin];
-                            //Console.WriteLine(String.Format("Ways to make {0}p ==> {1}. (coins up to {2})", target, waysToMake[target], coin));
+                            for (int t = coin; t <= target; t++)
+                            {
+                                // Using only coins <= coin, how many ways to make target?
+                                waysToMake[t] += waysToMake[t - coin];
+                            }
                         }
-                    }
-                    Console.WriteLine(String.Format("Solution: Amount of ways to make {0}p ==> {1}.", target, waysToMake[target]));
-                    break;
+                        return waysToMake[200];
 
-                default: // Error (not found)
-                    Console.WriteLine(String.Format("This problem (ID={0}) does not exist.", ProblemID));
-                    break;
+                    case 2: // Even Fibbonachi numbers
+
+                        List<int> Fib = new List<int>() { 1, 2 };
+                        target = 4000000;
+                        total = 2;
+                        while(Fib[Fib.Count-1] < target) // While < 4000000
+                        {
+                            int nextFib = Fib[Fib.Count - 1] + Fib[Fib.Count - 2];
+                            Fib.Add(nextFib);
+                            if (nextFib % 2 == 0) // If even
+                            {
+                                total += nextFib;
+                            }
+                        }
+                        return total;
+
+                    case 3: //Largest prime factor
+                        long numToFactor = 600851475143;
+                        List<long> factors = new List<long>();
+                        List<long> primes = new List<long>();
+
+                        int primeFactorIndex = 0;
+                        while (true) // As long as the remainder is not prime
+                        {
+                            // Calculate prime if needed
+                            if (primes.Count <= primeFactorIndex)
+                            {
+                                primes.Add(NextPrime(primes));
+                            }
+                            
+                            // Check is remainder is prime, if so, the last factor has been found.
+                            if (primes.Contains(numToFactor))
+                            {
+                                factors.Add(primes[primeFactorIndex]);
+                                break;
+                            }
+
+                            // Check if divisible
+                            if (numToFactor % primes[primeFactorIndex] == 0)
+                            {
+                                numToFactor = numToFactor / primes[primeFactorIndex];
+                                factors.Add(primes[primeFactorIndex]);
+                                //Console.WriteLine(String.Format("Factor found: {0}\nNew remainder: {1}", primes[primeFactorIndex], numToFactor));
+                                primeFactorIndex = -1; // Start back at prime index 0 (=2)
+                            }
+
+                            primeFactorIndex++;
+                        }
+                        return factors.Max();
+
+                    default:
+                        Console.WriteLine(String.Format("the solution to problem {0} is not implemented yet."),pID);
+                        return 0;
+                }
+            }
+        }
+        public class Problem
+        {
+            public int Difficulty, Solved_by;
+            public string Title, Discription;
+
+            public Problem(string Title_, string Discription_, int Solved_by_, int Difficulty_)
+            {
+                this.Title = Title_;
+                this.Discription = Discription_;
+                this.Difficulty = Difficulty_;
+                this.Solved_by = Solved_by_;
             }
         }
 
-        public class Problem
-        // This class contains the information pertaining to the problems.
+        public static int GetPrime(int primeNr)
         {
-            public int ID, Solved_by;
-            public string Title, Discription, Difficulty;
-            public Problem(int id, string title, string discription, int solved_by, string difficulty)
+            List<int> P = new List<int>();
+            for (int i = 2; P.Count < primeNr; i++) // Starting with 2, check all natural numbers.
             {
-                this.ID = id;
-                this.Title = title;
-                this.Discription = discription;
-                this.Solved_by = solved_by;
-                this.Difficulty = difficulty;
+                bool isPrime = true; // True untill proven otherwise
+                foreach (int p in P) // For each prime that has been found so far
+                {
+                    if (i % p == 0) // If it devides evenly
+                    {
+                        isPrime = false;
+                        break; // Break out op checking loop
+                    }
+                }
+                if (isPrime)
+                {
+                    P.Add(i); // Add i to P
+                }
+
             }
-            public void PrintInfo()
+            return P[primeNr - 1]; // This will be prime nr primeNr.
+        }
+
+        public static bool IsPrime(long c)
+        {
+            List<int> P = new List<int>(); // List of primes
+            for (int i = 2; i <= c; i++) // Starting with 2, check all natural numbers up to c.
             {
-                Console.WriteLine(this.Title + ":\n" + this.Discription + "\nSolved by: " + this.Solved_by + "\nDifficulty: " + this.Difficulty);
+                bool isPrime = true; // True untill proven otherwise
+                foreach (int p in P) // For each prime that has been found so far
+                {
+                    if (i % p == 0) // If it devides evenly
+                    {
+                        isPrime = false;
+                        break; // Break out op checking loop
+                    }
+                }
+                if (isPrime)
+                {
+                    P.Add(i); // Add i to P
+                }
+            }
+            // This is a bit of a hack fix
+            if (P[^1]==c){
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        public static long NextPrime(List<long> primes)
+        {
+            // Given a list of known primes, this function return the next prime number.
+
+            if (primes.Count == 0)
+            {
+                return 2;
+            }
+
+            for (long i = primes[^1]; true; i++) // Check all natural above the given primes untill a prime is found.
+            {
+                bool isPrime = true; // True untill proven otherwise
+                foreach (int p in primes) // For each prime that has been found so far
+                {
+                    if (i % p == 0) // If it devides evenly
+                    {
+                        isPrime = false;
+                        break; // Break out op checking loop
+                    }
+                }
+                if (isPrime) // If it wasn't divisible by any known prime, it's a prime.
+                {
+                    return i;
+                }
             }
         }
     }
