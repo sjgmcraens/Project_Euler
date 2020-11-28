@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Xml.Schema;
 
 namespace Project_Euler
 {
@@ -111,6 +116,54 @@ namespace Project_Euler
                     "A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.\n" +
                     "Find the largest palindrome made from the product of two 3-digit numbers.",
                     486673, 5));
+                
+                P.Add(5, new Problem("Smallest multiple",
+                    "2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.\n" +
+                    "What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?",
+                    486673, 5));
+
+                P.Add(6, new Problem("Sum square difference",
+                    "The sum of the squares of the first ten natural numbers is,\n" +
+                    "1+4+9+...+100 = 385\n" +
+                    "The square of the sum of the first ten natural numbers is,\n" +
+                    "(1+2+3+...+10)^2 = 3025\n" +
+                    "Hence the difference between the sum of the squares of the first ten natural numbers and the square of the sum is,\n" +
+                    "3025-385 = 2640\n" +
+                    "Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.",
+                    493325, 5));
+
+                P.Add(8, new Problem("Largest product in a series",
+                    "The four adjacent digits in the 1000-digit number that have the greatest product are 9 × 9 × 8 × 9 = 5832.,\n" +
+                    "73167176531330624919225119674426574742355349194934\n" +
+                    "96983520312774506326239578318016984801869478851843\n" +
+                    "85861560789112949495459501737958331952853208805511\n" +
+                    "12540698747158523863050715693290963295227443043557\n" +
+                    "66896648950445244523161731856403098711121722383113\n" +
+                    "62229893423380308135336276614282806444486645238749\n" +
+                    "30358907296290491560440772390713810515859307960866\n" +
+                    "70172427121883998797908792274921901699720888093776\n" +
+                    "65727333001053367881220235421809751254540594752243\n" +
+                    "52584907711670556013604839586446706324415722155397\n" +
+                    "53697817977846174064955149290862569321978468622482\n" +
+                    "83972241375657056057490261407972968652414535100474\n" +
+                    "82166370484403199890008895243450658541227588666881\n" +
+                    "16427171479924442928230863465674813919123162824586\n" +
+                    "17866458359124566529476545682848912883142607690042\n" +
+                    "24219022671055626321111109370544217506941658960408\n" +
+                    "07198403850962455444362981230987879927244284909188\n" +
+                    "84580156166097919133875499200524063689912560717606\n" +
+                    "05886116467109405077541002256983155200055935729725\n" +
+                    "71636269561882670428252483600823257530420752963450\n" +
+                    "Find the thirteen adjacent digits in the 1000-digit number that have the greatest product. What is the value of this product?",
+                    352346, 5));
+
+                P.Add(9, new Problem("Special Pythagorean triplet",
+                    "A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,\n" +
+                    "a2 + b2 = c2\n" +
+                    "For example, 32 + 42 = 9 + 16 = 25 = 52.\n" +
+                    "There exists exactly one Pythagorean triplet for which a + b + c = 1000.\n" +
+                    "Find the product abc.\n",
+                    357757, 5));
             }
 
             public static long solutions(int pID)
@@ -134,7 +187,7 @@ namespace Project_Euler
 
                     case 7: // 10001st prime
 
-                        return Prime.GetPrimeAtIndex(10001); // See also the static class 'Prime'
+                        return Prime.GetPrimeAtIndex(10000); // See also the static class 'Prime'
 
                     case 31: // Coin sums
 
@@ -173,23 +226,7 @@ namespace Project_Euler
 
                     case 3: //Largest prime factor
                         long numToFactor = 600851475143;
-                        List<long> factors = new List<long>();
-
-                        while (numToFactor != 1) // As long as the remainder is not 1 (This would mean that it's last factor was found.)
-                        {
-                            // Loop through the primes:
-                            for (int i=0; true; i++)
-                            {
-                                long P = Prime.GetPrimeAtIndex(i); // Get i'th prime.
-                                // If wholly divisible:
-                                if (numToFactor % P == 0)
-                                {
-                                    // Divide the number and add the factor to the list of factors.
-                                    numToFactor /= P;
-                                    factors.Add(P);
-                                }
-                            }
-                        }
+                        List<long> factors = Prime.GetPrimeFactors(numToFactor);
                         return factors.Max();
 
                     case 4: //Largest palindrome product
@@ -231,11 +268,132 @@ namespace Project_Euler
                                     }
                                 }
                             }
-                            palindrome = GetLargestPalinDromeBelow(palindrome-1);
-                            
+                            palindrome = GetLargestPalinDromeBelow(palindrome-1);                            
                         }
                         // No solution was found.
                         return -1;
+
+                    case 5: // Smallest multiple
+
+                        List<int> ns = new List<int>();
+                        for (int i=1; i<=20; i++)
+                        {
+                            ns.Add(i);
+                        }
+                        return LowestCommonMultiple(ns);
+
+                    case 6: // Sum square difference
+
+                        int upTo = 100;
+                        double sumOfQuares = 0;
+                        int sum = 0;
+                        for (int i=1; i<= upTo; i++)
+                        {
+                            sumOfQuares += Math.Pow(i, 2);
+                            sum += i;
+                        }
+                        double squareOfSum = Math.Pow(sum, 2);
+                        return Convert.ToInt64(Math.Abs(squareOfSum - sumOfQuares));
+
+                    case 8:
+
+                        int lengthOfProduct= 13;
+
+                        string N = "73167176531330624919225119674426574742355349194934" +
+                                   "96983520312774506326239578318016984801869478851843" +
+                                   "85861560789112949495459501737958331952853208805511" +
+                                   "12540698747158523863050715693290963295227443043557" +
+                                   "66896648950445244523161731856403098711121722383113" +
+                                   "62229893423380308135336276614282806444486645238749" +
+                                   "30358907296290491560440772390713810515859307960866" +
+                                   "70172427121883998797908792274921901699720888093776" +
+                                   "65727333001053367881220235421809751254540594752243" +
+                                   "52584907711670556013604839586446706324415722155397" +
+                                   "53697817977846174064955149290862569321978468622482" +
+                                   "83972241375657056057490261407972968652414535100474" +
+                                   "82166370484403199890008895243450658541227588666881" +
+                                   "16427171479924442928230863465674813919123162824586" +
+                                   "17866458359124566529476545682848912883142607690042" +
+                                   "24219022671055626321111109370544217506941658960408" +
+                                   "07198403850962455444362981230987879927244284909188" +
+                                   "84580156166097919133875499200524063689912560717606" +
+                                   "05886116467109405077541002256983155200055935729725" +
+                                   "71636269561882670428252483600823257530420752963450";
+
+                        // Finding the biggest product also means finding the biggest sum.
+                        // First we put them all into a big list
+                        List<string> sequences = new List<string>();
+
+                        for (int firstDigitIndex = 0; firstDigitIndex + lengthOfProduct <= N.Length; firstDigitIndex++)
+                        {
+                            // With products, order doesn't matter, so we sort the sequences from lowest to highest.
+                            string subStr = N.Substring(firstDigitIndex, lengthOfProduct);
+                            string sortedStr = String.Concat(subStr.ToCharArray().OrderBy(c => CharToInt(c)));
+                            sequences.Add(sortedStr);
+                            //Console.WriteLine("Added sequence: " + sequences[^1]);
+                        }
+
+                        // Now that we have this list, lets go through caracter by caracter
+                        for (int i = 0; i < lengthOfProduct; i++)
+                        {
+                            Console.WriteLine(i);
+                            int highest = 0;
+
+                            // Find the sequences with the higest value at this index position and reduce the list to them.
+                            foreach (string seq in sequences)
+                            {
+                                //Console.WriteLine(seq);
+                                if (CharToInt(seq[i]) > highest)
+                                {
+                                    highest = CharToInt(seq[i]);
+                                    sequences = new List<string>() { seq };
+                                }
+                                else if (CharToInt(seq[i]) == highest)
+                                {
+                                    sequences.Add(seq);
+                                }
+                            }
+                        }
+
+                        long highestTotal = 0;
+                        foreach (string seq in sequences)
+                        {
+                            long subTotal = 1;
+                            foreach (char c in seq)
+                            {
+                                subTotal *= CharToInt(c);
+                            }
+                            if (subTotal > highestTotal)
+                            {
+                                highestTotal = subTotal;
+                            }
+                        }
+                        return highestTotal;
+
+                    case 9: // Special Pythagorean triplet
+
+                        // a+b+c=1000
+                        // a<b<c
+
+                        int[] triplet = new int[3];
+                        for (int k = 1; true; k++)
+                        {
+                            for (int m = 2; true; m++)
+                            {
+                                for (int n = 1; n < m; n++)
+                                {
+                                    triplet = GetPythagorianTriplet(m, n, k);
+                                    if (triplet.Sum() == 1000)
+                                    {
+                                        return triplet[0] * triplet[1] * triplet[2];
+                                    }
+                                }
+                                if (triplet.Sum() > 1000)
+                                {
+                                    break; // Start trying multiples (k>1)
+                                }
+                            }
+                        }
 
                     default:
                         Console.WriteLine(String.Format("the solution to problem {0} is not implemented yet.", pID));
@@ -261,93 +419,120 @@ namespace Project_Euler
             // This class contains a list of the known primes and related methods.
         {
             public static List<long> Primes;
-            public static long largestCheckedNumber;
+            public static long largestChecked;
 
             // Constructor
             static Prime()
             {
                 // Add the first prime
                 Primes = new List<long>() { 2 };
-                largestCheckedNumber = 2;
+                largestChecked = 2;
             }
 
             public static bool IsPrime(long n)
             // This function checks for primality. Since I use all primes below n to determine
-            // wether n is prime, another function is refrenced and everything should word.
+            // wether n is prime, another function is refrenced and everything should work.
             {
-                // If not all number up to p have been checked, calculate them
-                if (largestCheckedNumber < n - 1)
+                // If it has been checked:
+                if (largestChecked >= n)
                 {
-                    calcNewPrimes("upToNumber", n - 1);
+                    return Primes.Contains(Convert.ToInt64(n)); // Return wether it's in the list
+
+                } else 
+                {
+                    CalcNewPrimes("upToNumber", n);
+                    return IsPrime(n);
                 }
-                // Update largestCheckedNumber
-                if (n > largestCheckedNumber) {
-                    largestCheckedNumber = n;
-                }
-                // Do prime Check
-                foreach (int p in Primes) // For each prime that has been found so far
+            }
+
+            public static bool DivisbleByKnownPrimes(long n)
+            {
+                foreach (long p in Primes)
                 {
                     if (n % p == 0) // If it devides evenly
                     {
-                        return false;
+                        return true;
                     }
                 }
-                return true;
+                return false;
             }
 
-            public static void calcNewPrimes(string mode, long n)
+            public static void CalcNewPrimes(string mode, long n)
             // This funcion calculates new primes.
             // It has a few modes and an input that specify's the amount of new primes
             // to be calculated according to the selected mode.
             {
-                switch (mode) {
-
-                    case "upToPrimeIndex": // doesn't count 0, so: n=1 ==> 2
-                        for (long i = largestCheckedNumber + 1; Primes.Count <= n; i++)
+                switch (mode)
+                {
+                    case "upToIndex":
+                        while (Primes.Count < n + 1)
                         {
-                            if (IsPrime(i)) // If prime
+                            // Check if divisible by primes below it
+                            largestChecked++;
+                            if (DivisbleByKnownPrimes(largestChecked))
                             {
-                                Primes.Add(i); // Add i to Primes
+                                break;
                             }
+                            Primes.Add(largestChecked);
                         }
-                        break;
+                        return;
 
-                    case "upToNumber": // 10 ==> 2,3,5,7 (includes 10)
-                        for (long i = largestCheckedNumber + 1; i <= n; i++)
+                    case "upToNumber":
+                        while (largestChecked < n)
                         {
-                            if (IsPrime(i)) // If prime
-                            {
-                                Primes.Add(i); // Add i to Primes
-                            }
+                            CalcNewPrimes("amountOfNew", 1);
                         }
-                        break;
+                        return;
 
                     case "amountOfNew":
-                        int newPrimesFound = 0;
-                        for (long i = largestCheckedNumber + 1; newPrimesFound < n; i++)
-                        {
-                            if (IsPrime(i))
-                            {
-                                Primes.Add(i); // Add i to P
-                                newPrimesFound++;
-                            }
-                        }
-                        break;
+                        CalcNewPrimes("upToIndex", Primes.Count + n);
+                        return;
 
                     default:
-                        Console.WriteLine(String.Format("Primes.calcNewPrimes Error: Unknown mode '{0}'. Valid modes are {1}.", mode, ""));
-                        break;
+                        Console.WriteLine(String.Format("Primes.calcNewPrimes Error: Unknown mode '{0}'. Valid modes are 'upToIndex' and 'upToNumber'.", mode));
+                        return;
                 }
             }
             public static long GetPrimeAtIndex(int i)
             // This function returns the i'th prime. (starts at n=1 ==> 2)
             {
-                // If the i'th prime is not known: calculate it.
-                if (Primes.Count < i)
+                // If the the amount of known primes is not higher than the requested index.
+                if (Primes.Count !> i)
                 {
-                    calcNewPrimes("upToPrimeIndex", i);
+                    CalcNewPrimes("upToIndex", i);
                 }
-                return Primes[i - 1];
+                return Primes[i];
+            }
+
+            public static List<long> GetPrimeFactors(long numToFactor)
+            {
+
+                // Create list
+                List<long> factors = new List<long>();
+
+                while (numToFactor > 1) // We can factor any number > 1 (1 has 0 prime factors)
+                {
+                    // If prime stop
+                    if (Prime.IsPrime(numToFactor))
+                    {
+                        factors.Add(numToFactor);
+                        return factors;
+                    } else // Else look for factor
+                    {
+                        for (int primeI = 0; true; primeI++)
+                        {
+                            long P = GetPrimeAtIndex(primeI); // get prime
+                            if (numToFactor % P == 0) // if divisor
+                            {
+                                // Divide the number and add the factor to the list of factors.
+                                numToFactor /= P;
+                                factors.Add(P);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return factors;
             }
         }
         public static string ReverseString(string s)
@@ -408,6 +593,75 @@ namespace Project_Euler
                 string newPalindrome = newFirstHalfInclusive_str + newSecondHalf_str; // Ex: 99799
                 return Int32.Parse(newPalindrome);
             }
+        }
+
+        public static long LowestCommonMultiple(List<int> ns)
+        {
+            // Return trivial answer
+            if (ns.Count < 2)
+            {
+                return ns[0];
+            }
+
+            Dictionary<int, int> factorHighestCount = new Dictionary<int, int>();
+            // For every n
+            foreach (int n in ns)
+            {
+                // Get count of prime factors
+                Dictionary<int,int> primeCount = GetCountDictFromList(Prime.GetPrimeFactors(n));
+                foreach (int i in primeCount.Keys)
+                {
+
+                    if (factorHighestCount.ContainsKey(i)){
+                        if (factorHighestCount[i] < primeCount[i])
+                        {
+                            factorHighestCount[i] = primeCount[i];
+                        }
+                    } else
+                    {
+                        factorHighestCount.Add(i, primeCount[i]);
+                    }
+                }
+            }
+
+            // Multiply factors
+            int total = 1;
+            foreach (int i in factorHighestCount.Keys)
+            {
+                total *= Convert.ToInt32(Math.Pow(i, factorHighestCount[i]));
+            }
+            return total;
+        }
+
+        public static Dictionary<int, int> GetCountDictFromList(List<long> list)
+        {
+            Dictionary<int, int> count = new Dictionary<int, int>();
+            foreach (int i in list)
+            {
+                if (count.ContainsKey(i))
+                {
+                    count[i] += 1;
+                } else
+                {
+                    count.Add(i, 1);
+                }
+            }
+            return count;
+        }
+
+        public static int CharToInt(char c)
+        {
+            return (int)(c - '0');
+        }
+
+        public static int[] GetPythagorianTriplet(int m, int n, int k)
+            // This function generates pythagorian triplets given natural numbers k, m and n
+            // While m>n
+        {
+            int a = k * (m * m - n * n);
+            int b = k * (2 * m * n);
+            int c = k * (m * m + n * n);
+            return new int[] { a,b,c };
         }
     }
 }
