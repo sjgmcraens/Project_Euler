@@ -164,6 +164,11 @@ namespace Project_Euler
                     "There exists exactly one Pythagorean triplet for which a + b + c = 1000.\n" +
                     "Find the product abc.\n",
                     357757, 5));
+
+                P.Add(10, new Problem("Summation of primes",
+                    "The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.\n" +
+                    "Find the sum of all the primes below two million.\n",
+                    327678, 5));
             }
 
             public static long solutions(int pID)
@@ -394,6 +399,24 @@ namespace Project_Euler
                                 }
                             }
                         }
+                        //break;
+
+                    case 10:
+
+                        // Find the sum of all the primes below two million.
+                        long Sum = 0;
+                        int limit = 2000000;
+
+                        // Get all primes below limit
+                        List<long> P = Prime.GetAllPrimesBelowN(limit);
+
+                        foreach(long p in P)
+                        {
+                            Sum += p;
+                        }
+                        
+                        return Sum;
+                        //break;
 
                     default:
                         Console.WriteLine(String.Format("the solution to problem {0} is not implemented yet.", pID));
@@ -465,24 +488,31 @@ namespace Project_Euler
                 switch (mode)
                 {
                     case "upToIndex":
-                        while (Primes.Count < n + 1)
+                        while (Primes.Count <= n)
                         {
                             // Check if divisible by primes below it
                             largestChecked++;
-                            if (DivisbleByKnownPrimes(largestChecked))
+                            if (!DivisbleByKnownPrimes(largestChecked))
                             {
-                                break;
+                                // Add if not divisible
+                                Primes.Add(largestChecked);
                             }
-                            Primes.Add(largestChecked);
+
+
                         }
                         return;
 
                     case "upToNumber":
-                        while (largestChecked < n)
-                        {
-                            CalcNewPrimes("amountOfNew", 1);
-                        }
+
+                        CalcPrimesBelowN_Sieve((int)n);
+
                         return;
+
+                        //while (largestChecked < n)
+                        //{
+                        //    CalcNewPrimes("amountOfNew", 1);
+                        //}
+                        //return;
 
                     case "amountOfNew":
                         CalcNewPrimes("upToIndex", Primes.Count + n);
@@ -494,14 +524,33 @@ namespace Project_Euler
                 }
             }
             public static long GetPrimeAtIndex(int i)
-            // This function returns the i'th prime. (starts at n=1 ==> 2)
+            // This function returns the i'th prime. (starts at n=0 ==> 2)
             {
                 // If the the amount of known primes is not higher than the requested index.
-                if (Primes.Count !> i)
+                if (Primes.Count <= i)
                 {
                     CalcNewPrimes("upToIndex", i);
                 }
                 return Primes[i];
+            }
+
+
+            public static List<long> GetAllPrimesBelowN(int n)
+            {
+                CalcPrimesBelowN_Sieve(n);
+
+                List<long> primesBelowN= new List<long>();
+                foreach (long P in Primes)
+                {
+                    if (P < n)
+                    {
+                        primesBelowN.Add(P);
+                    } else
+                    {
+                        break;
+                    }
+                }
+                return primesBelowN;
             }
 
             public static List<long> GetPrimeFactors(long numToFactor)
@@ -534,7 +583,45 @@ namespace Project_Euler
                 }
                 return factors;
             }
+
+            public static void CalcPrimesBelowN_Sieve(int n)
+            {
+                // Return if nothing has to be calculated
+                if (Primes[^1] >= n)
+                {
+                    return;
+                }
+
+                // Create list of candidates (0 ... n-1)
+                bool[] candidates = new bool[n]; // Default value is false
+                candidates[0] = true; // True means it is seaved out
+                candidates[1] = true;
+
+                // Sieve out all multiples of primes that we know
+                int primeI = 0;
+                while (true)
+                {
+                    // For every multiple with product below n...
+                    for (int mult = 1; Primes[primeI] * mult < n; mult++)
+                    {
+                        candidates[Primes[primeI] * mult] = true; // Seave it out
+                    }
+
+                    int index = Array.IndexOf(candidates, false);
+                    
+                    if (index == -1)
+                    {
+                        break;
+                    }
+
+                    Primes.Add(index);
+                    primeI++;
+                }
+                largestChecked = n - 1;
+            }
+
         }
+
         public static string ReverseString(string s)
             // This function reverses a string
         {
