@@ -169,9 +169,35 @@ namespace Project_Euler
                     "The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.\n" +
                     "Find the sum of all the primes below two million.\n",
                     327678, 5, Sol_10));
+
+                P.Add(11, new Problem("Largest product in a grid",
+                    "In the 20×20 grid below, four numbers along a diagonal line have been marked in red.\n" +
+                    "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08\n" +
+                    "49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00\n" +
+                    "81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65\n" +
+                    "52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91\n" +
+                    "22 31 16 71 51 67 63 89 41 92 36 54 22 40 40 28 66 33 13 80\n" +
+                    "24 47 32 60 99 03 45 02 44 75 33 53 78 36 84 20 35 17 12 50\n" +
+                    "32 98 81 28 64 23 67 10 26 38 40 67 59 54 70 66 18 38 64 70\n" +
+                    "67 26 20 68 02 62 12 20 95 63 94 39 63 08 40 91 66 49 94 21\n" +
+                    "24 55 58 05 66 73 99 26 97 17 78 78 96 83 14 88 34 89 63 72\n" +
+                    "21 36 23 09 75 00 76 44 20 45 35 14 00 61 33 97 34 31 33 95\n" +
+                    "78 17 53 28 22 75 31 67 15 94 03 80 04 62 16 14 09 53 56 92\n" +
+                    "16 39 05 42 96 35 31 47 55 58 88 24 00 17 54 24 36 29 85 57\n" +
+                    "86 56 00 48 35 71 89 07 05 44 44 37 44 60 21 58 51 54 17 58\n" +
+                    "19 80 81 68 05 94 47 69 28 73 92 13 86 52 17 77 04 89 55 40\n" +
+                    "04 52 08 83 97 35 99 16 07 97 57 32 16 26 26 79 33 27 98 66\n" +
+                    "88 36 68 87 57 62 20 72 03 46 33 67 46 55 12 32 63 93 53 69\n" +
+                    "04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36\n" +
+                    "20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16\n" +
+                    "20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54\n" +
+                    "01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48\n" +
+                    "The product of these numbers is 26 × 63 × 78 × 14 = 1788696./n" +
+                    "What is the greatest product of four adjacent numbers in the same direction (up, down, left, right, or diagonally) in the 20×20 grid?",
+                    234222, 5, Sol_11));
             }
 
-            public static long Sol_1()
+            public static string Sol_1()
             {
                 // Multiples of 3 and 5
 
@@ -186,10 +212,10 @@ namespace Project_Euler
                         total += i;
                     }
                 }
-                return total;
+                return $"Answer: {total}";
             }
 
-            public static long Sol_2() // Even Fibbonachi numbers
+            public static string Sol_2() // Even Fibbonachi numbers
             {
                 List<int> Fib = new List<int>() { 1, 2 };
                 int target = 4000000;
@@ -203,18 +229,18 @@ namespace Project_Euler
                         total += nextFib;
                     }
                 }
-                return total;
+                return $"Answer: {total}";
             }
 
-            public static long Sol_3()
+            public static string Sol_3()
             {
                 //Largest prime factor
                 long numToFactor = 600851475143;
                 List<long> factors = Prime.GetPrimeFactors(numToFactor);
-                return factors.Max();
+                return $"Answer: {factors.Max()}";
             }
 
-            public static long Sol_4()
+            public static string Sol_4()
             {
                 //Largest palindrome product
 
@@ -251,17 +277,17 @@ namespace Project_Euler
                             if ((palindrome / i).ToString().Length == Multdigits) // If the division creates a 3-digit number.
                             {
                                 //Console.WriteLine(String.Format("Palindrome {0} can be made using {1} x {2}",palindrome,i,palindrome / i));
-                                return palindrome; // Return the succesfull palindrome.
+                                return $"Answer: {palindrome}"; // Return the succesfull palindrome.
                             }
                         }
                     }
                     palindrome = GetLargestPalinDromeBelow(palindrome - 1);
                 }
                 // No solution was found.
-                return -1;
+                return "No solution was found.";
             }
 
-            public static long Sol_5()
+            public static string Sol_5()
             {
                 // Smallest multiple
 
@@ -270,10 +296,10 @@ namespace Project_Euler
                 {
                     ns.Add(i);
                 }
-                return LowestCommonMultiple(ns);
+                return $"Answer: {LowestCommonMultiple(ns)}";
             }
 
-            public static long Sol_6()
+            public static string Sol_6()
             {
                 // Sum square difference
 
@@ -286,16 +312,16 @@ namespace Project_Euler
                     sum += i;
                 }
                 double squareOfSum = Math.Pow(sum, 2);
-                return Convert.ToInt64(Math.Abs(squareOfSum - sumOfQuares));
+                return $"Answer: {Math.Abs(squareOfSum - sumOfQuares)}";
             }
 
 
-            public static long Sol_7() // 10001st prime
+            public static string Sol_7() // 10001st prime
             {
-                return Prime.GetPrimeAtIndex(10000); // See also the static class 'Prime'
+                return $"Answer: {Prime.GetPrimeAtIndex(10000)}"; // See also the static class 'Prime'
             }
 
-            public static long Sol_8()
+            public static string Sol_8()
             {
                 int lengthOfProduct = 13;
 
@@ -368,10 +394,10 @@ namespace Project_Euler
                         highestTotal = subTotal;
                     }
                 }
-                return highestTotal;
+                return $"Highest total ({highestTotal}) found at ...";
             }
 
-            public static long Sol_9()
+            public static string Sol_9()
             {
                 // Special Pythagorean triplet
 
@@ -388,7 +414,7 @@ namespace Project_Euler
                             triplet = GetPythagorianTriplet(m, n, k);
                             if (triplet.Sum() == 1000)
                             {
-                                return triplet[0] * triplet[1] * triplet[2];
+                                return $"{triplet[0]} * {triplet[1]} * {triplet[2]} = {triplet[0] * triplet[1] * triplet[2]}";
                             }
                         }
                         if (triplet.Sum() > 1000)
@@ -400,10 +426,10 @@ namespace Project_Euler
                 //break;
             }
 
-            public static long Sol_10()
+            public static string Sol_10()
             {
                 // Find the sum of all the primes below two million.
-                long Sum = 0;
+                long sum = 0;
                 int limit = 2000000;
 
                 // Get all primes below limit
@@ -412,14 +438,106 @@ namespace Project_Euler
                 // Summate
                 foreach (long p in P)
                 {
-                    Sum += p;
+                    sum += p;
                 }
 
                 // Return
-                return Sum;
+                return $"Answer: {sum}";
             }
 
-            public static long Sol_31()
+            public static string Sol_11()
+            {
+                // Largest product in a grid
+
+                int nInProd = 4;
+
+                int[,] Grid = new int[,]{
+                { 08, 02, 22, 97, 38, 15, 00, 40, 00, 75, 04, 05, 07, 78, 52, 12, 50, 77, 91, 08 },
+                { 49, 49, 99, 40, 17, 81, 18, 57, 60, 87, 17, 40, 98, 43, 69, 48, 04, 56, 62, 00 },
+                { 81, 49, 31, 73, 55, 79, 14, 29, 93, 71, 40, 67, 53, 88, 30, 03, 49, 13, 36, 65 },
+                { 52, 70, 95, 23, 04, 60, 11, 42, 69, 24, 68, 56, 01, 32, 56, 71, 37, 02, 36, 91 },
+                { 22, 31, 16, 71, 51, 67, 63, 89, 41, 92, 36, 54, 22, 40, 40, 28, 66, 33, 13, 80 },
+                { 24, 47, 32, 60, 99, 03, 45, 02, 44, 75, 33, 53, 78, 36, 84, 20, 35, 17, 12, 50 },
+                { 32, 98, 81, 28, 64, 23, 67, 10, 26, 38, 40, 67, 59, 54, 70, 66, 18, 38, 64, 70 },
+                { 67, 26, 20, 68, 02, 62, 12, 20, 95, 63, 94, 39, 63, 08, 40, 91, 66, 49, 94, 21 },
+                { 24, 55, 58, 05, 66, 73, 99, 26, 97, 17, 78, 78, 96, 83, 14, 88, 34, 89, 63, 72 },
+                { 21, 36, 23, 09, 75, 00, 76, 44, 20, 45, 35, 14, 00, 61, 33, 97, 34, 31, 33, 95 },
+                { 78, 17, 53, 28, 22, 75, 31, 67, 15, 94, 03, 80, 04, 62, 16, 14, 09, 53, 56, 92 }, // Why yes, I did do this all by hand.
+                { 16, 39, 05, 42, 96, 35, 31, 47, 55, 58, 88, 24, 00, 17, 54, 24, 36, 29, 85, 57 },
+                { 86, 56, 00, 48, 35, 71, 89, 07, 05, 44, 44, 37, 44, 60, 21, 58, 51, 54, 17, 58 },
+                { 19, 80, 81, 68, 05, 94, 47, 69, 28, 73, 92, 13, 86, 52, 17, 77, 04, 89, 55, 40 },
+                { 04, 52, 08, 83, 97, 35, 99, 16, 07, 97, 57, 32, 16, 26, 26, 79, 33, 27, 98, 66 },
+                { 88, 36, 68, 87, 57, 62, 20, 72, 03, 46, 33, 67, 46, 55, 12, 32, 63, 93, 53, 69 },
+                { 04, 42, 16, 73, 38, 25, 39, 11, 24, 94, 72, 18, 08, 46, 29, 32, 40, 62, 76, 36 },
+                { 20, 69, 36, 41, 72, 30, 23, 88, 34, 62, 99, 69, 82, 67, 59, 85, 74, 04, 36, 16 },
+                { 20, 73, 35, 29, 78, 31, 90, 01, 74, 31, 49, 71, 48, 86, 81, 16, 23, 57, 05, 54 },
+                { 01, 70, 54, 71, 83, 51, 54, 69, 16, 92, 33, 48, 61, 43, 52, 01, 89, 19, 67, 48 } 
+                };
+
+                int gridSize = Grid.GetLength(0); // Assuming its square
+                //int[,] prodGrid = new int[gridSize, gridSize];
+
+                int largestProductSoFar = 0;
+                int[] largestProdInfo = new int[4];
+                bool reCalcNeeded = true;
+
+                // For every row
+                for (int y = 0; y < gridSize; y++)
+                {
+                    // For every col
+                    for (int x = 0; x < gridSize; x++)
+                    {
+                        // Determine the checks that can be done at this coordinate
+                        List<Tuple<int, int>> dirSteps = new List<Tuple<int, int>>();
+
+                        // Horizontal (after x=3)
+                        if (x >= nInProd - 1)
+                        {
+                            dirSteps.Add(new Tuple<int, int>(-1, 0));
+                        }
+
+                        // Vertical (after y=3)
+                        if (y >= nInProd - 1)
+                        {
+                            dirSteps.Add(new Tuple<int, int>(0, -1));
+                        }
+
+                        // Diagonal TopLeft (after x,y = 3)
+                        if (y >= nInProd - 1 && x >= nInProd - 1)
+                        {
+                            dirSteps.Add(new Tuple<int, int>(-1, -1));
+                        }
+
+                        // Diagonal BottomLeft (after x = 3 to x = gridSize-4)
+                        if (x >= nInProd - 1 && y <= gridSize - nInProd)
+                        {
+                            dirSteps.Add(new Tuple<int, int>(-1, 1));
+                        }
+
+                        // For each direction
+                        foreach ((int dx, int dy) in dirSteps)
+                        {
+                            int prod = 1;
+
+                            // Calculate the product stepwise
+                            for (int i = 0; i < nInProd; i++)
+                            {
+                                prod *= Grid[y + dy*i, x + dx*i];
+                            }
+
+                            // Check against largest so far
+                            if (prod > largestProductSoFar)
+                            {
+                                largestProductSoFar = prod;
+                                largestProdInfo = new int[] { x, y, dx, dy };
+                            }
+                        }
+                    }
+                }
+                return $"Largest product ({largestProductSoFar}) found at ({largestProdInfo[0]},{largestProdInfo[1]}), dir: ({largestProdInfo[2]},{largestProdInfo[3]}))";
+            }
+
+            public static string Sol_31()
             {
                 // Coin sums
 
@@ -438,7 +556,7 @@ namespace Project_Euler
                         waysToMake[t] += waysToMake[t - coin];
                     }
                 }
-                return waysToMake[200];
+                return $"Answer: {waysToMake[200]}";
             }
         }
 
@@ -446,9 +564,9 @@ namespace Project_Euler
         {
             public int Difficulty, Solved_by;
             public string Title, Discription;
-            public Func<long> Solution;
+            public Func<string> Solution;
 
-            public Problem(string Title_, string Discription_, int Solved_by_, int Difficulty_, Func<long> Solution_)
+            public Problem(string Title_, string Discription_, int Solved_by_, int Difficulty_, Func<string> Solution_)
             {
                 this.Title = Title_;
                 this.Discription = Discription_;
